@@ -4,7 +4,7 @@ import os
 
 app = Flask (__name__)
 
-DATABASE = os.path.join(app.instance_path, 'database.sqlite')
+DATABASE = 'https://drive.google.com/file/d/1vImNtUtb61c6n7QMPLqO6MzUrPX7vPyT/view?usp=sharing'
 
 def get_db():
     db = getattr(g, '_database', None)
