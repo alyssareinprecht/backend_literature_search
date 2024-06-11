@@ -4,7 +4,18 @@ import os
 
 app = Flask (__name__)
 
-DATABASE = 'https://drive.google.com/file/d/1vImNtUtb61c6n7QMPLqO6MzUrPX7vPyT/view?usp=sharing'
+DATABASE_URL = 'https://drive.google.com/uc?export=download&id=1vImNtUtb61c6n7QMPLqO6MzUrPX7vPyT'
+DATABASE_PATH = 'database.db'
+
+def download_database():
+    if not os.path.exists(DATABASE_PATH):
+        print("Downloading database file...")
+        response = requests.get(DATABASE_URL, stream=True)
+        with open(DATABASE_PATH, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
+        print("Database downloaded successfully.")
 
 def get_db():
     db = getattr(g, '_database', None)
