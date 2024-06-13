@@ -1,0 +1,40 @@
+<!-- File path: templates/about.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>About Us - My Flask App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+</head>
+<body>
+    <header>
+        <h1>About Us</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/about">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section>
+            <h2>Our Mission</h2>
+            <p>We strive to provide...</p>
+        </section>
+        <section>
+            <h2>Our Team</h2>
+            <ul>
+                <li>John Doe - CEO</li>
+                <li>Jane Smith - CTO</li>
+                <!-- Add more team members as needed -->
+            </ul>
+        </section>
+    </main>
+    
+    <footer>
+        &copy; 2024 My Flask App
+    </footer>
+</body>
+</html>
