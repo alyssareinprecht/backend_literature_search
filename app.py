@@ -11,7 +11,7 @@ df['word_frequency_dict'] = df['word_frequency_dict'].apply(literal_eval)
 
 ##### Function to rank papers 
 def rank_papers(df, include_keywords, exclude_keywords):
-    include_keywords = include_keywords[:4]  # Limiting to first 4 for scoring, as per original design
+    include_keywords = include_keywords[:5]  # Limiting to 5
 
     def score_paper(keywords_importance):
         keywords_dict = dict(keywords_importance)
