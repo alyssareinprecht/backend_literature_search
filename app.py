@@ -10,17 +10,22 @@ df['keywords_scaled_importance'] = df['keywords_scaled_importance'].apply(litera
 df['word_frequency_dict'] = df['word_frequency_dict'].apply(literal_eval)
 
 ##### Function to rank papers 
-def rank_papers(df, keyword_list):
-    keyword_list = keyword_list[:4]
-    
+def rank_papers(df, include_keywords, exclude_keywords):
+    include_keywords = include_keywords[:4]  # Limiting to first 4 for scoring, as per original design
+
     def score_paper(keywords_importance):
         keywords_dict = dict(keywords_importance)
+        # Check for exclusion
+        if any(keyword in keywords_dict for keyword in exclude_keywords):
+            return None
+        # Calculate score for inclusion
         score = []
-        for keyword in keyword_list:
+        for keyword in include_keywords:
             score.append(keywords_dict.get(keyword, 0))
         return tuple(score)
-    
+        
     df['score'] = df['keywords_scaled_importance'].apply(score_paper)
+    df = df[df['score'] != None]
     sorted_df = df.sort_values(by='score', ascending=False, kind='mergesort')
     return sorted_df
 
@@ -32,8 +37,9 @@ def index():
 @app.route('/rank_papers', methods=['POST'])
 def get_ranked_papers():
     data = request.json
-    keywords = data.get('keywords', [])
-    ranked_df = rank_papers(df, keywords)
+    include_keywords = data.get('include', [])
+    exclude_keywords = data.get('exclude', [])
+    ranked_df = rank_papers(df, include_keywords, exclude_keywords)
     papers = ranked_df[['title', 'word_frequency_dict']].to_dict(orient='records')
     return jsonify(papers)
 
