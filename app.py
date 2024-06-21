@@ -37,10 +37,10 @@ def get_ranked_papers():
 
     # Check if include keywords are empty
     if not include_keywords:
-        papers = df[['title', 'word_frequency_dict']].to_dict(orient='records')
+        papers = df[['title', 'word_frequency_dict', 'keyword_scaled_importance']].to_dict(orient='records')
     else:
         ranked_df = rank_papers(df, include_keywords)
-        papers = ranked_df[['title', 'word_frequency_dict']].to_dict(orient='records')
+        papers = ranked_df[['title', 'word_frequency_dict', 'keyword_scaled_importance']].to_dict(orient='records')
     
     return jsonify(papers)
 
