@@ -7,7 +7,9 @@ import io
 import base64
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-CORS(app)
+
+# Allow CORS for all domains on all routes
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Load data
 df = pd.read_csv('data/research_papers_with_wordinfo.csv')
@@ -25,6 +27,7 @@ def rank_papers(df, include_keywords):
 
     df['score'] = df['keyword_scaled_importance'].apply(score_paper)
     df = df[df['score'].notnull()]
+
     sorted_df = df.sort_values(by='score', ascending=False, kind='mergesort')
     return sorted_df
 
@@ -73,13 +76,13 @@ def get_all_papers():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/word_cloud/<title>', methods=['GET'])
-def get_word_cloud(title):
+@app.route('/generate_word_cloud', methods=['POST'])
+def generate_word_cloud_endpoint():
     try:
-        paper = df[df['title'] == title].iloc[0]
-        word_freq_dict = paper['word_frequency_dict']
+        data = request.json
+        word_freq_dict = data.get('word_frequency_dict', {})
         word_cloud_img = generate_word_cloud(word_freq_dict)
-        return jsonify({'word_cloud': word_cloud_img})
+        return jsonify({'word_cloud_image': word_cloud_img})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
