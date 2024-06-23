@@ -62,6 +62,11 @@ def get_ranked_papers():
         data = request.json
         include_keywords = data.get('include', [])
         exclude_keywords = data.get('exclude', [])
+
+        # Check if the number of exclude keywords exceeds the limit
+        if len(exclude_keywords) > 15:
+            return jsonify({'error': 'You can only exclude up to 15 keyword tags.'}), 400
+
         if not include_keywords and not exclude_keywords:
             papers = df[['title', 'word_frequency_dict', 'keyword_scaled_importance']].to_dict(orient='records')
         else:
