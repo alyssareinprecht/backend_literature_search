@@ -17,7 +17,7 @@ df['keyword_scaled_importance'] = df['keyword_scaled_importance'].apply(literal_
 df['word_frequency_dict'] = df['word_frequency_dict'].apply(literal_eval)
 
 # Function to rank papers
-def rank_papers(df, include_keywords):
+def rank_papers(df, include_keywords, exclude_keywords):
     include_keywords = include_keywords[:5]  # Limiting to 5
 
     def score_paper(keywords_importance):
@@ -25,10 +25,23 @@ def rank_papers(df, include_keywords):
         score = sum(keywords_dict.get(keyword['keyword'], 0) * keyword['priority'] for keyword in include_keywords)
         return score if score > 0 else None
 
-    df['score'] = df['keyword_scaled_importance'].apply(score_paper)
-    df = df[df['score'].notnull()]
+    if include_keywords:
+        df['score'] = df['keyword_scaled_importance'].apply(score_paper)
+        df = df[df['score'].notnull()]
 
-    sorted_df = df.sort_values(by='score', ascending=False, kind='mergesort')
+    # Filter out papers that contain any of the excluded keywords
+    def contains_excluded_keywords(keywords_importance):
+        keywords_dict = dict(keywords_importance)
+        return any(keyword['keyword'] in keywords_dict for keyword in exclude_keywords)
+
+    if exclude_keywords:
+        df = df[~df['keyword_scaled_importance'].apply(contains_excluded_keywords)]
+
+    if include_keywords:
+        sorted_df = df.sort_values(by='score', ascending=False, kind='mergesort')
+    else:
+        sorted_df = df
+
     return sorted_df
 
 # Function to generate word cloud
@@ -48,10 +61,11 @@ def get_ranked_papers():
     try:
         data = request.json
         include_keywords = data.get('include', [])
-        if not include_keywords:
+        exclude_keywords = data.get('exclude', [])
+        if not include_keywords and not exclude_keywords:
             papers = df[['title', 'word_frequency_dict', 'keyword_scaled_importance']].to_dict(orient='records')
         else:
-            ranked_df = rank_papers(df, include_keywords)
+            ranked_df = rank_papers(df, include_keywords, exclude_keywords)
             papers = ranked_df[['title', 'word_frequency_dict', 'keyword_scaled_importance']].to_dict(orient='records')
         return jsonify(papers)
     except Exception as e:
