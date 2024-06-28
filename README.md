@@ -10,7 +10,7 @@ Before running the application, ensure you have the following software installed
 
 ## Installation
 
-1. **Use the provided folder "literature_search_backend" OR clone the repository**
+1. **Use the provided folder OR clone the repository**
     ```bash
     git clone https://github.com/alyssareinprecht/backend_literature_search
     cd backend_literature_search
@@ -36,6 +36,10 @@ Before running the application, ensure you have the following software installed
 1. **Start the Flask server:**
     ```bash
     python app.py
+    ```
+    or 
+    ```bash
+    py app.py
     ```
 
 2. **Access the application:**
